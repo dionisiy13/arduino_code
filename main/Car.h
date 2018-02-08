@@ -35,8 +35,8 @@ void Car::setAngle(int pos)
 
 void Car::backward(){
     Serial.println("backward");
-    digitalWrite (IN1, HIGH);
-    digitalWrite (IN2, LOW);
+    digitalWrite (IN1, LOW);
+    digitalWrite (IN2, HIGH);
 }
 
 
@@ -45,6 +45,7 @@ void Car::stopHard(int pause = 0){
     digitalWrite(IN1, LOW);
     digitalWrite(IN2, LOW);
     delay(pause);
+ 
 }
 
 void Car::stopEasy(){
@@ -54,8 +55,9 @@ void Car::stopEasy(){
 
 void Car::forward(){
     Serial.println("forward");
-    digitalWrite (IN1, LOW);
-    digitalWrite (IN2, HIGH);
+    digitalWrite (IN1, HIGH);
+    digitalWrite (IN2, LOW);
+    
 }
 
 void Car::setSpeed(int speed) {

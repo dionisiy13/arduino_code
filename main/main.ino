@@ -25,7 +25,7 @@ Servo myservo;
 Car car;
 String inString = "";    // string to hold 
 
-PID myPID(&Input, &Output, &Setpoint,8.6,0.5,1, DIRECT);//создаем ПИД-регулятор
+PID myPID(&Input, &Output, &Setpoint,2,0.5,1, DIRECT);//создаем ПИД-регулятор
 
 void setup() {
   Serial.begin(9600);
@@ -33,11 +33,11 @@ void setup() {
   pinMode(inPin, INPUT);
   pinMode(pingPin, OUTPUT);
   digitalWrite(pingPin, LOW);
-  pinMode (EN1, OUTPUT);
+  //pinMode (EN1, OUTPUT);
   pinMode (IN1, OUTPUT);
   pinMode (IN2, OUTPUT);
-
-  Setpoint = 400;//заданная температура в салоне автомобиля
+  Input = 400;
+ //заданная температура в салоне автомобиля
   myPID.SetOutputLimits(65, 120);//устанавливаем границы выходного сигнала для ПИД-регулятора
   if (Setpoint < Input){//если начальная температура больше заданной
     revers=true;
@@ -47,14 +47,37 @@ void setup() {
   
   car.setPins(IN1, IN2, EN1);
   car.setServo(myservo, 10);
+   digitalWrite (IN2, HIGH);
+  digitalWrite (IN2, LOW); 
   
 }
 
 void loop() {
+
+  if (getDistance() > 150) {
+      car.forward();
+      getData(150);
+  } else if (getDistance() < 150 && getDistance() > 30 ) {
+      acd = 150 - cm; 
+      analog = 150 - (150 * (acd / 150));
+      acd = (int) analog;
+      car.forward();
+      getData(acd);
+  } else {
+      car.stopHard(200);
+      car.setSpeed(0);
+      car.forward();
+   }
+  
   getData();
 }
 
-void getData() {
+int getDistance() {
+    int cm = sensor.distance();
+    return cm;
+}
+
+void getData(int speed) {
   while (Serial.available() > 0) {
     int inChar = Serial.read();
     if (inChar) {
@@ -67,17 +90,16 @@ void getData() {
       Serial.println(inString.toInt());
       Serial.print("String: ");
       Serial.println(inString);
-
-      Input = inString.toInt();//анализируем температуру салона
+      detectWall();
+      Setpoint = inString.toInt();//анализируем температуру салона
       myPID.Compute();//считаем выходной сигнал ПИД-регулятора
-      if (revers)//если пид регулятор обратный, то сервой управляем также относительно противоположной крайней точки
+      if (revers) {
          car.setAngle(120-Output);
-      else
-      car.setAngle(Output);
-      myservo.detach();//отключаемся от сервы
-      car.setSpeed(100);
+      } else {
+        car.setAngle(Output);
+      }
+    
       
-      // clear the string for new input:
       inString = "";
     }
   }
