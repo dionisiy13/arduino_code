@@ -2,7 +2,7 @@
 #include <Servo.h> 
 #include <iarduino_HC_SR04_int.h>
 #include "Car.h"
-#include <PID_v1.h>//библиотека ПИД-ругулятора
+#include <PID_v1.h>
 
 // for distance sensor
 int pingPin = 3; // trig
@@ -23,9 +23,9 @@ iarduino_HC_SR04_int sensor(pingPin,inPin);
 
 Servo myservo; 
 Car car;
-String inString = "";    // string to hold 
+String inString = "";   
 
-PID myPID(&Input, &Output, &Setpoint,2,0.5,1, DIRECT);//создаем ПИД-регулятор
+PID myPID(&Input, &Output, &Setpoint,2,0.5,1, DIRECT);
 
 void setup() {
   Serial.begin(9600);
@@ -37,13 +37,13 @@ void setup() {
   pinMode (IN1, OUTPUT);
   pinMode (IN2, OUTPUT);
   Input = 400;
- //заданная температура в салоне автомобиля
-  myPID.SetOutputLimits(65, 120);//устанавливаем границы выходного сигнала для ПИД-регулятора
-  if (Setpoint < Input){//если начальная температура больше заданной
+
+  myPID.SetOutputLimits(65, 120);
+  if (Setpoint < Input){
     revers=true;
-    myPID.SetControllerDirection(REVERSE);//ПИД-регулятор используем обратный
+    myPID.SetControllerDirection(REVERSE);
   }
-  myPID.SetMode(AUTOMATIC);//включаем ПИД-регулятор
+  myPID.SetMode(AUTOMATIC);
   
   car.setPins(IN1, IN2, EN1);
   car.setServo(myservo, 10);
@@ -91,14 +91,13 @@ void getData(int speed) {
       Serial.print("String: ");
       Serial.println(inString);
       detectWall();
-      Setpoint = inString.toInt();//анализируем температуру салона
-      myPID.Compute();//считаем выходной сигнал ПИД-регулятора
+      Setpoint = inString.toInt();
+      myPID.Compute();
       if (revers) {
          car.setAngle(120-Output);
       } else {
         car.setAngle(Output);
       }
-    
       
       inString = "";
     }
