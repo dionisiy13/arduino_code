@@ -12,9 +12,10 @@ int inPin = 2; // echo
 int needToControl = 400;
 
 // for motors
-int IN1 = 8; 
-int IN2 = 11;
-int EN1 = 6;
+int INA = 6; 
+int INB = 8;
+int EN1 = 11;
+int EN = 7;
 
 boolean revers;
 
@@ -25,7 +26,7 @@ Servo myservo;
 Car car;
 String inString = "";   
 
-PID myPID(&Input, &Output, &Setpoint,1,0.5,1, DIRECT);
+PID myPID(&Input, &Output, &Setpoint,2,0.5,1, DIRECT);
 
 void setup() {
   Serial.begin(9600);
@@ -36,6 +37,9 @@ void setup() {
   //pinMode (EN1, OUTPUT);
   pinMode (IN1, OUTPUT);
   pinMode (IN2, OUTPUT);
+  pinMode(EN, OUTPUT);   
+  digitalWrite(EN, HIGH);
+  
   Input = 400;
 
   myPID.SetOutputLimits(65, 120);
@@ -52,26 +56,24 @@ void setup() {
   
 }
 
-int acd, analog, cm;
-
 void loop() {
 
   if (getDistance() > 150) {
       car.forward();
-      getData(150);
+      getData(50);
   } else if (getDistance() < 150 && getDistance() > 30 ) {
       acd = 150 - cm; 
       analog = 150 - (150 * (acd / 150));
       acd = (int) analog;
       car.forward();
-      getData(acd);
+      getData(50);
   } else {
       car.stopHard(200);
-      car.setSpeed(0);
+      car.setSpeed(40);
       car.forward();
    }
   
-  getData(210);
+  getData();
 }
 
 int getDistance() {
@@ -92,6 +94,7 @@ void getData(int speed) {
       Serial.println(inString.toInt());
       Serial.print("String: ");
       Serial.println(inString);
+      detectWall();
       Setpoint = inString.toInt();
       myPID.Compute();
       if (revers) {
@@ -99,7 +102,6 @@ void getData(int speed) {
       } else {
         car.setAngle(Output);
       }
-      Serial.print(Output);
       
       inString = "";
     }
