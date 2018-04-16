@@ -25,7 +25,7 @@ Servo myservo;
 Car car;
 String inString = "";   
 
-PID myPID(&Input, &Output, &Setpoint,2,0.5,1, DIRECT);
+PID myPID(&Input, &Output, &Setpoint,1,0.5,1, DIRECT);
 
 void setup() {
   Serial.begin(9600);
@@ -52,6 +52,8 @@ void setup() {
   
 }
 
+int acd, analog, cm;
+
 void loop() {
 
   if (getDistance() > 150) {
@@ -69,7 +71,7 @@ void loop() {
       car.forward();
    }
   
-  getData();
+  getData(210);
 }
 
 int getDistance() {
@@ -90,7 +92,6 @@ void getData(int speed) {
       Serial.println(inString.toInt());
       Serial.print("String: ");
       Serial.println(inString);
-      detectWall();
       Setpoint = inString.toInt();
       myPID.Compute();
       if (revers) {
@@ -98,6 +99,7 @@ void getData(int speed) {
       } else {
         car.setAngle(Output);
       }
+      Serial.print(Output);
       
       inString = "";
     }
