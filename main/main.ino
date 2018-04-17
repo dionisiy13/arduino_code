@@ -1,8 +1,9 @@
 #include <Wire.h>
 #include <Servo.h> 
-#include <iarduino_HC_SR04_int.h>
-#include "Car.h"
 #include <PID_v1.h>
+#include "Car.h"
+//#include <iarduino_HC_SR04_int.h>
+
 
 // for distance sensor
 int pingPin = 3; // trig
@@ -20,7 +21,7 @@ int EN = 7;
 boolean revers;
 
 double Setpoint, Input, Output;
-iarduino_HC_SR04_int sensor(pingPin,inPin);   
+//iarduino_HC_SR04_int sensor(pingPin,inPin);   
 
 Servo myservo; 
 Car car;
@@ -35,8 +36,8 @@ void setup() {
   pinMode(pingPin, OUTPUT);
   digitalWrite(pingPin, LOW);
   //pinMode (EN1, OUTPUT);
-  pinMode (IN1, OUTPUT);
-  pinMode (IN2, OUTPUT);
+  pinMode (INA, OUTPUT);
+  pinMode (INB, OUTPUT);
   pinMode(EN, OUTPUT);   
   digitalWrite(EN, HIGH);
   
@@ -49,24 +50,28 @@ void setup() {
   }
   myPID.SetMode(AUTOMATIC);
   
-  car.setPins(IN1, IN2, EN1);
+  car.setPins(INA, INB, EN1);
   car.setServo(myservo, 10);
-   digitalWrite (IN2, HIGH);
-  digitalWrite (IN2, LOW); 
+   digitalWrite (INA, HIGH);
+  digitalWrite (INB, LOW); 
   
 }
 
 void loop() {
-
+  float acd;
+  int cm;
+  float analog;
   if (getDistance() > 150) {
       car.forward();
-      getData(50);
+      car.setSpeed(40);
+      getData();
   } else if (getDistance() < 150 && getDistance() > 30 ) {
       acd = 150 - cm; 
       analog = 150 - (150 * (acd / 150));
       acd = (int) analog;
       car.forward();
-      getData(50);
+      car.setSpeed(40);
+      getData();
   } else {
       car.stopHard(200);
       car.setSpeed(40);
@@ -77,11 +82,16 @@ void loop() {
 }
 
 int getDistance() {
-    int cm = sensor.distance();
-    return cm;
+    return 160;
+    //int cm = sensor.distance();
+    //return cm;
 }
 
-void getData(int speed) {
+void getData() {
+  if (Serial.available()) {
+	  car.setSpeed(0);
+  } 
+
   while (Serial.available() > 0) {
     int inChar = Serial.read();
     if (inChar) {
@@ -94,7 +104,7 @@ void getData(int speed) {
       Serial.println(inString.toInt());
       Serial.print("String: ");
       Serial.println(inString);
-      detectWall();
+      //detectWall();
       Setpoint = inString.toInt();
       myPID.Compute();
       if (revers) {
