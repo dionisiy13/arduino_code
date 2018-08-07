@@ -53,8 +53,8 @@ void PID::Compute()
 	  double input = *myInput;
       double error = *mySetpoint- input;
       ITerm+= (ki * error);
-      if(ITerm > outMax) ITerm= outMax;
-      else if(ITerm < outMin) ITerm= outMin;
+      if(ITerm > (outMax + 90)) ITerm= outMax;
+      else if(ITerm < (outMin + 90)) ITerm= outMin;
       double dInput = (input - lastInput);
 ////////////////////
  
@@ -85,8 +85,8 @@ void PID::Compute()
       /*Compute PID Output*/
       double output = (kp * error + ITerm+kd * dInput) ;
       
-	  if(output > outMax) output = outMax;
-      else if(output < outMin) output = outMin;
+	  if(output > (outMax)) output = outMax + 90;
+      else if(output < (outMin)) output = outMin + 90;
 	  *myOutput = output;
 	  
       /*Remember some variables for next time*/

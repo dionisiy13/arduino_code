@@ -1,4 +1,4 @@
-
+#include <Arduino.h>
 class Car
 {
   int IN1, IN2, EN1;
@@ -34,7 +34,7 @@ void Car::setAngle(int pos)
 }
 
 void Car::backward(){
-    Serial.println("backward");
+    //Serial.println("backward");
     digitalWrite (IN1, LOW);
     digitalWrite (IN2, HIGH);
 }
@@ -54,9 +54,9 @@ void Car::stopEasy(){
 }
 
 void Car::forward(){
-    Serial.println("forward");
-    digitalWrite (IN1, HIGH);
-    digitalWrite (IN2, LOW);
+    //Serial.println("forward");
+    digitalWrite (IN1, LOW);
+    digitalWrite (IN2, HIGH);
     
 }
 
