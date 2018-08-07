@@ -3,6 +3,8 @@
 #include <Arduino.h>
 #include <PID_v1.h>
 #include "Car.h"
+#include <Wire.h>
+#define SLAVE_ADDRESS 0x04
 
 
 // for distance sensor
@@ -12,7 +14,7 @@ int inPin = 2; // echo
 // center
 int needToControl = 250;
 
-
+int number = 0;
 int INA = 6; 
 int INB = 8;
 int EN1 = 11;
@@ -84,28 +86,20 @@ int getDistance() {
 
 void getData() {
 
-  //while (Serial.available() > 0) {
-    int inChar = Serial.read();
-    if (inChar) {
-      // convert the incoming byte to a char and add it to the string:
-      inString += (char)inChar;
-    }
-    // if you get a newline, print the string, then the string's value:
-    if (inChar == '\n') {
-      //erial.print("Value:");
-      //Serial.println(inString.toInt());
-      //Serial.print("String: ");
-      //Serial.println(inString);
-      //detectWall();
-      Setpoint = inString.toInt();
-      int value;
-      car.setAngle(Setpoint);
+  while(Wire.available()) {
+
+        number = Wire.read();
+
+        Serial.print("data received: ");
+
+        Serial.println(number);
+
+        car.setAngle(number);
+
+     }
+
       
-     
       
-      inString = "";
-    }
-  //}
 
 }
 
