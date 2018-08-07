@@ -32,6 +32,8 @@ PID myPID(&Input, &Output, &Setpoint,1,0,0, DIRECT);
 
 void setup() {
   Serial.begin(9600);
+
+  Wire.begin(SLAVE_ADDRESS);
   
   pinMode(inPin, INPUT);
   pinMode(pingPin, OUTPUT);
@@ -43,6 +45,7 @@ void setup() {
   digitalWrite(EN, HIGH);
   
   Input = 250;
+
   
 
 
