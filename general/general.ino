@@ -34,6 +34,7 @@ void setup() {
   Serial.begin(9600);
 
   Wire.begin(SLAVE_ADDRESS);
+  Wire.onReceive(getData);
   
   pinMode(inPin, INPUT);
   pinMode(pingPin, OUTPUT);
@@ -51,9 +52,9 @@ void setup() {
 
   myPID.SetOutputLimits(60, 120);
   myPID.SetMode(AUTOMATIC);
-  
+  car.setServo(myservo, 9);
   car.setPins(INA, INB, EN1);
-  car.setServo(myservo, 10);
+
   
 }
 
@@ -61,23 +62,9 @@ void loop() {
   float acd;
   int cm;
   float analog;
-   
-   if (getDistance() > 150) {
+   car.setSpeed(35);
         car.forward();
-        car.setSpeed(55);
-        getData();
-    } else if (getDistance() < 150 && getDistance() > 30 ) {
-        acd = 150 - cm; 
-        analog = 150 - (150 * (acd / 150));
-        acd = (int) analog;
-        car.forward();
-        car.setSpeed(40);
-        getData();
-    } else {
-        car.stopHard(200);
-        car.setSpeed(40);
-        car.forward();
-     }
+
   
 }
 
@@ -87,19 +74,24 @@ int getDistance() {
     //return cm;
 }
 
-void getData() {
-
+void getData(int d) {
+   
   while(Wire.available()) {
 
         number = Wire.read();
+       
 
         Serial.print("data received: ");
 
         Serial.println(number);
-
+        
         car.setAngle(number);
+        car.setSpeed(35);
+        car.forward();
 
      }
+
+    
 
       
       

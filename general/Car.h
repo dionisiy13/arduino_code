@@ -12,6 +12,7 @@ class Car
     void setSpeed(int);
     void setAngle(int);
     void setServo(Servo, int);
+    void detachServo();
 };
 
 void Car::setPins(int x, int y, int z)
@@ -27,10 +28,15 @@ void Car::setServo(Servo turning, int pin)
   servo.attach(pin);
 }
 
+void Car::detachServo()
+{
+   servo.detach();
+}
+
 void Car::setAngle(int pos) 
 {
   servo.write(pos);
-  delay(7);
+  delay(15);
 }
 
 void Car::backward(){
