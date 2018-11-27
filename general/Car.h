@@ -63,11 +63,10 @@ void Car::forward(){
     //Serial.println("forward");
     digitalWrite (IN1, LOW);
     digitalWrite (IN2, HIGH);
-    
 }
 
 void Car::setSpeed(int speed) {
-  analogWrite(EN1, speed);
+    analogWrite(EN1, speed);
 }
 
 
